@@ -15,16 +15,40 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> {
   bool _showButtons = false;
-  bool _showQuestion =
-      false; // Añadida para controlar la visibilidad de la pregunta
+  bool _showQuestion = false;
+  bool _showAnswerButtons = false;
 
-  final List<String> _preguntas = [
-    '¿Cuál es la capital de Francia?',
-    '¿Quién escribió La Odisea?',
-    '¿Qué gas es esencial para la respiración de los seres humanos?',
-    '¿Cuál es el río más largo del mundo?',
-    '¿En qué año llegó el hombre a la Luna?'
+  List<String>? _preguntasActuales;
+
+  final List<String> _preguntasPaises = [
+    '¿la capital de Francia es Paris?',
+    '¿Japón se encuentra en asia?',
+    '¿el gentilicio de Inglaterra es ingleses',
+    '¿Islandia es una isla?',
+    '¿New York es la capital de EEUU?'
   ];
+  final List<String> _preguntasHistoria = [
+    '¿La Revolución Francesa comenzó en 1789?',
+    '¿La Gran Muralla China fue construida inicialmente para repeler invasiones de dinosaurios?',
+    '¿Leonardo Da Vinci pintó la "Última Cena" en el siglo XV?',
+    '¿La Primera Guerra Mundial comenzó en 1914?',
+    '¿El Imperio Romano cayó en el año 476 d.C.?'
+  ];
+
+  final List<String> _preguntasDeportes = [
+    '¿El baloncesto fue inventado en 1891?',
+    '¿El futbol es el deporte más popular del mundo?',
+    '¿El balonmano es un deporte de equipo?',
+    '¿El golf se juega con una pelota pequeña?',
+    '¿El tenis se juega con una raqueta y una pelota?'
+  ];
+
+  void _siguientePregunta() {
+    setState(() {
+      _preguntaActual =
+          _preguntasActuales![Random().nextInt(_preguntasActuales!.length)];
+    });
+  }
 
   String? _preguntaActual;
 
@@ -58,38 +82,95 @@ class _MainAppState extends State<MainApp> {
                   ),
                 ),
               if (_showButtons)
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _preguntaActual =
-                          _preguntas[Random().nextInt(_preguntas.length)];
-                      _showButtons = false;
-                      _showQuestion = true; // Muestra la pregunta
-                    });
-                  },
-                  child: const Text(
-                    'Música',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+
+                //paises
+                Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _preguntasActuales = _preguntasPaises;
+                          _preguntaActual = _preguntasActuales![
+                              Random().nextInt(_preguntasActuales!.length)];
+                          _showButtons = false;
+                          _showQuestion = true; // Muestra la pregunta
+                        });
+                      },
+                      child: const Text(
+                        'Paises',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
-                  ),
+
+                    //historia
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _preguntasActuales = _preguntasHistoria;
+                          _preguntaActual = _preguntasHistoria![
+                              Random().nextInt(_preguntasHistoria!.length)];
+                          _showButtons = false;
+                          _showQuestion = true;
+                        });
+                      },
+                      child: const Text(
+                        'Historia',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+
+                    //deportes
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _preguntasActuales = _preguntasDeportes;
+                          _preguntaActual = _preguntasDeportes[
+                              Random().nextInt(_preguntasDeportes.length)];
+                          _showButtons = false;
+                          _showQuestion = true;
+                          _showAnswerButtons = true;
+                        });
+                      },
+                      child: const Text(
+                        'Deportes',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              if (_showQuestion) // Asegurarse de que la pregunta se muestra cuando se debe
-                Text(_preguntaActual!),
-              if ((_showQuestion || !_showButtons) &&
-                  _preguntaActual !=
-                      null) // El botón regresar se muestra cuando está la pregunta o no hay botones.
+              if (_showQuestion) Text(_preguntaActual!),
+              if (_showQuestion)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: _siguientePregunta,
+                      child: const Text('verdadero'), //boton verdadero
+                    ),
+                    SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: _siguientePregunta,
+                      child: const Text('falso'), //boton falso
+                    ),
+                  ],
+                ),
+              if ((_showQuestion || !_showButtons) && _preguntaActual != null)
                 SizedBox(height: 20),
-              if ((_showQuestion || !_showButtons) &&
-                  _preguntaActual !=
-                      null) // Ajustado para mostrar en las condiciones correctas
+              if ((_showQuestion || !_showButtons) && _preguntaActual != null)
                 ElevatedButton(
                     onPressed: () {
                       setState(() {
                         _showButtons = false;
-                        _showQuestion =
-                            false; // Restablece para no mostrar la pregunta
+                        _showQuestion = false;
                         _preguntaActual = null;
                       });
                     },
