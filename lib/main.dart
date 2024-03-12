@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,12 +14,15 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   bool _showButtons = false;
   bool _showQuestion = false;
-  bool _showAnswerButtons = false;
-
+  //bool _showAnswerButtons = false;
+  int _preguntasMostradas = 0;
+  int _puntaje = 0;
+  List<bool> _respuestasActuales = [];
   List<String>? _preguntasActuales;
+  String? _preguntaActual;
 
   final List<String> _preguntasPaises = [
-    '¿la capital de Francia es Paris?',
+    '¿la capital de Francia es Lyon?',
     '¿Japón se encuentra en asia?',
     '¿el gentilicio de Inglaterra es ingleses',
     '¿Islandia es una isla?',
@@ -29,7 +30,7 @@ class _MainAppState extends State<MainApp> {
   ];
   final List<String> _preguntasHistoria = [
     '¿La Revolución Francesa comenzó en 1789?',
-    '¿La Gran Muralla China fue construida inicialmente para repeler invasiones de dinosaurios?',
+    '¿La mona lisa es una famosa pintura de Leonardo Da Vinci?',
     '¿Leonardo Da Vinci pintó la "Última Cena" en el siglo XV?',
     '¿La Primera Guerra Mundial comenzó en 1914?',
     '¿El Imperio Romano cayó en el año 476 d.C.?'
@@ -39,18 +40,59 @@ class _MainAppState extends State<MainApp> {
     '¿El baloncesto fue inventado en 1891?',
     '¿El futbol es el deporte más popular del mundo?',
     '¿El balonmano es un deporte de equipo?',
-    '¿El golf se juega con una pelota pequeña?',
+    '¿El golf se juega con una pelota cuadrada?',
     '¿El tenis se juega con una raqueta y una pelota?'
   ];
 
+  final List<bool> _respuestasPaises = [
+    false,
+    true,
+    true,
+    true,
+    false,
+  ];
+
+  final List<bool> _respuestasHistoria = [
+    true,
+    true,
+    false,
+    true,
+    true,
+  ];
+
+  final List<bool> _respuestasDeportes = [
+    true,
+    true,
+    true,
+    false,
+    true,
+  ];
+
   void _siguientePregunta() {
-    setState(() {
-      _preguntaActual =
-          _preguntasActuales![Random().nextInt(_preguntasActuales!.length)];
-    });
+    if (_preguntasMostradas + 1 < _preguntasActuales!.length) {
+      setState(() {
+        _preguntasMostradas++;
+        _preguntaActual = _preguntasActuales![_preguntasMostradas];
+      });
+    } else {
+      setState(() {
+        _showQuestion = false;
+        _showButtons = false; // Añade esta línea
+      });
+    }
   }
 
-  String? _preguntaActual;
+  void _manejarRespuesta(bool respuestaUsuario) {
+    //int indicePreguntaActual = _preguntasActuales!.indexOf(_preguntaActual!);
+    //bool respuestaCorrecta = _respuestasActuales[indicePreguntaActual];
+
+    if (respuestaUsuario == _respuestasActuales[_preguntasMostradas]) {
+      //setState(() {
+      _puntaje++;
+      //});
+    }
+    _siguientePregunta();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +106,7 @@ class _MainAppState extends State<MainApp> {
         ),
         body: Center(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               if (!_showButtons && !_showQuestion) // Mostrar solo al inicio
                 ElevatedButton(
@@ -82,69 +124,14 @@ class _MainAppState extends State<MainApp> {
                   ),
                 ),
               if (_showButtons)
-
-                //paises
                 Column(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _preguntasActuales = _preguntasPaises;
-                          _preguntaActual = _preguntasActuales![
-                              Random().nextInt(_preguntasActuales!.length)];
-                          _showButtons = false;
-                          _showQuestion = true; // Muestra la pregunta
-                        });
-                      },
-                      child: const Text(
-                        'Paises',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-
-                    //historia
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _preguntasActuales = _preguntasHistoria;
-                          _preguntaActual = _preguntasHistoria![
-                              Random().nextInt(_preguntasHistoria!.length)];
-                          _showButtons = false;
-                          _showQuestion = true;
-                        });
-                      },
-                      child: const Text(
-                        'Historia',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-
-                    //deportes
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _preguntasActuales = _preguntasDeportes;
-                          _preguntaActual = _preguntasDeportes[
-                              Random().nextInt(_preguntasDeportes.length)];
-                          _showButtons = false;
-                          _showQuestion = true;
-                          _showAnswerButtons = true;
-                        });
-                      },
-                      child: const Text(
-                        'Deportes',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
+                    _categoriaButton(
+                        'Países', _preguntasPaises, _respuestasPaises),
+                    _categoriaButton(
+                        'Historia', _preguntasHistoria, _respuestasHistoria),
+                    _categoriaButton(
+                        'Deportes', _preguntasDeportes, _respuestasDeportes),
                   ],
                 ),
               if (_showQuestion) Text(_preguntaActual!),
@@ -153,31 +140,58 @@ class _MainAppState extends State<MainApp> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     ElevatedButton(
-                      onPressed: _siguientePregunta,
-                      child: const Text('verdadero'), //boton verdadero
+                      onPressed: () => _manejarRespuesta(true),
+                      child: const Text('Verdadero'),
                     ),
-                    SizedBox(width: 20),
+                    const SizedBox(width: 20),
                     ElevatedButton(
-                      onPressed: _siguientePregunta,
-                      child: const Text('falso'), //boton falso
+                      onPressed: () => _manejarRespuesta(false),
+                      child: const Text('Falso'),
                     ),
                   ],
                 ),
-              if ((_showQuestion || !_showButtons) && _preguntaActual != null)
-                SizedBox(height: 20),
-              if ((_showQuestion || !_showButtons) && _preguntaActual != null)
-                ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _showButtons = false;
-                        _showQuestion = false;
-                        _preguntaActual = null;
-                      });
-                    },
-                    child: const Text('Regresar'))
+              if (!_showQuestion && !_showButtons && _preguntasActuales != null)
+                Column(
+                  children: [
+                    Text('¡Cuestionario completado!'),
+                    Text('Respuestas correctas: $_puntaje'),
+                    Text(
+                        'Respuestas incorrectas: ${_preguntasActuales!.length - _puntaje}'),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _preguntasMostradas = 0;
+                          _puntaje = 0;
+                          _showButtons = true;
+                          _preguntasActuales = null;
+                        });
+                      },
+                      child: Text('Volver a jugar'),
+                    ),
+                  ],
+                ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _categoriaButton(
+      String categoria, List<String> preguntas, List<bool> respuestas) {
+    return ElevatedButton(
+      onPressed: () {
+        setState(() {
+          _preguntasActuales = preguntas;
+          _respuestasActuales = respuestas;
+          _preguntaActual = preguntas.first;
+          _showButtons = false;
+          _showQuestion = true;
+        });
+      },
+      child: Text(
+        categoria,
+        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       ),
     );
   }
