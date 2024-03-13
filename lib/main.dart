@@ -24,16 +24,20 @@ class _MainAppState extends State<MainApp> {
   final List<String> _preguntasPaises = [
     '¿la capital de Francia es Lyon?',
     '¿Japón se encuentra en asia?',
-    '¿el gentilicio de Inglaterra es ingleses',
+    '¿el gentilicio de Inglaterra es "ingles"?',
     '¿Islandia es una isla?',
-    '¿New York es la capital de EEUU?'
+    '¿New York es la capital de EEUU?',
+    '¿El río más largo del mundo es el Nilo?',
+    '¿El Everest es la montaña más alta del mundo?'
   ];
   final List<String> _preguntasHistoria = [
     '¿La Revolución Francesa comenzó en 1789?',
     '¿La mona lisa es una famosa pintura de Leonardo Da Vinci?',
     '¿Leonardo Da Vinci pintó la "Última Cena" en el siglo XV?',
     '¿La Primera Guerra Mundial comenzó en 1914?',
-    '¿El Imperio Romano cayó en el año 476 d.C.?'
+    '¿El Imperio Romano cayó en el año 476 d.C.?',
+    '¿La Segunda Guerra Mundial comenzó en 1939?',
+    '¿La Revolución Rusa comenzó en 1817?'
   ];
 
   final List<String> _preguntasDeportes = [
@@ -41,13 +45,17 @@ class _MainAppState extends State<MainApp> {
     '¿El futbol es el deporte más popular del mundo?',
     '¿El balonmano es un deporte de equipo?',
     '¿El golf se juega con una pelota cuadrada?',
-    '¿El tenis se juega con una raqueta y una pelota?'
+    '¿El tenis se juega con una raqueta y una pelota?',
+    '¿pele es un famoso boxeador?',
+    '¿en boxeo se puede golpear por debajo de la cintura?'
   ];
 
   final List<bool> _respuestasPaises = [
     false,
     true,
     true,
+    true,
+    false,
     true,
     false,
   ];
@@ -58,6 +66,8 @@ class _MainAppState extends State<MainApp> {
     false,
     true,
     true,
+    true,
+    false,
   ];
 
   final List<bool> _respuestasDeportes = [
@@ -66,6 +76,8 @@ class _MainAppState extends State<MainApp> {
     true,
     false,
     true,
+    false,
+    false,
   ];
 
   void _siguientePregunta() {
@@ -100,8 +112,11 @@ class _MainAppState extends State<MainApp> {
       home: Scaffold(
         appBar: AppBar(
           title: const Padding(
-            padding: EdgeInsets.only(top: 20.0),
-            child: Text("Quiz app"),
+            padding: EdgeInsets.only(top: 28.0),
+            child: Text("Quiz app",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                )),
           ),
         ),
         body: Center(
@@ -129,12 +144,35 @@ class _MainAppState extends State<MainApp> {
                     _categoriaButton(
                         'Países', _preguntasPaises, _respuestasPaises),
                     _categoriaButton(
-                        'Historia', _preguntasHistoria, _respuestasHistoria),
+                      'Historia',
+                      _preguntasHistoria,
+                      _respuestasHistoria,
+                    ),
                     _categoriaButton(
                         'Deportes', _preguntasDeportes, _respuestasDeportes),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _showButtons = false;
+                          _showQuestion = false;
+                          _preguntasMostradas = 0;
+                          _puntaje = 0;
+                        });
+                      },
+                      child: const Text(
+                        'Volver',
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                    )
                   ],
                 ),
-              if (_showQuestion) Text(_preguntaActual!),
+              if (_showQuestion)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  child: Text(_preguntaActual!),
+                ),
               if (_showQuestion)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
